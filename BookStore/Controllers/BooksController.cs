@@ -18,88 +18,45 @@ namespace BookStore.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Book>>> GetAllBooks()
         {
-            try
-            {
-                var books = await _bookRepository.GetAllBooksAsync();
-                return Ok(books);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, "An error occurred while processing your request.");
-            }
+            var books = await _bookRepository.GetAllBooksAsync();
+            return Ok(books);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Book>> GetBookById(int id) 
+        public async Task<ActionResult<Book>> GetBookById(int id)
         {
-            try
+            var book = await _bookRepository.GetBookByIdAsync(id);
+            if (book == null)
             {
-                var book = await _bookRepository.GetBookByIdAsync(id);
-                if (book == null)
-                {
-                    return NotFound($"Book with ID {id} not found.");
-                }
-                return Ok(book);
+                return NotFound($"Book with ID {id} not found.");
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, "An error occurred while processing your request.");
-            }
+            return Ok(book);
         }
 
         [HttpPost]
         public async Task<ActionResult<Book>> AddBook(Book book)
         {
-            try
+            if (book == null)
             {
-                if (book == null)
-                {
-                    return BadRequest("Invalid book data.");
-                }
+                return BadRequest("Invalid book data.");
+            }
 
-                await _bookRepository.AddBookAsync(book);
-                return CreatedAtAction(nameof(GetBookById), new { id = book.Id }, book);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, "An error occurred while processing your request.");
-            }
+            await _bookRepository.AddBookAsync(book);
+            return CreatedAtAction(nameof(GetBookById), new { id = book.Id }, book);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBook(int id, Book updatedBook)
         {
-            try
-            {
-                await _bookRepository.UpdateBookAsync(id, updatedBook);
-                return NoContent();
-            }
-            catch (ArgumentException)
-            {
-                return NotFound($"Book with ID {id} not found.");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, "An error occurred while processing your request.");
-            }
+            await _bookRepository.UpdateBookAsync(id, updatedBook);
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBook(int id)
         {
-            try
-            {
-                await _bookRepository.DeleteBookAsync(id);
-                return NoContent();
-            }
-            catch (ArgumentException)
-            {
-                return NotFound($"Book with ID {id} not found.");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, "An error occurred while processing your request.");
-            }
+            await _bookRepository.DeleteBookAsync(id);
+            return NoContent();
         }
     }
 }

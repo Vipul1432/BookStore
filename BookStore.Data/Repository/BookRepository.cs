@@ -19,22 +19,41 @@ namespace BookStore.Data.Repository
             _dbContext = dbContext;
         }
 
+        /// <summary>
+        /// Retrieves all books asynchronously.
+        /// </summary>
+        /// <returns>A collection of all available books.</returns>
         public async Task<IEnumerable<Book>> GetAllBooksAsync()
         {
             return await _dbContext.Books.ToListAsync();
         }
 
+        /// <summary>
+        /// Retrieves a book by its unique identifier asynchronously.
+        /// </summary>
+        /// <param name="id">The ID of the book to retrieve.</param>
+        /// <returns>The book with the specified ID or null if not found.</returns>
         public async Task<Book> GetBookByIdAsync(int id)
         {
             return await _dbContext.Books.FirstOrDefaultAsync(b => b.Id == id);
         }
 
+        /// <summary>
+        /// Adds a new book asynchronously.
+        /// </summary>
+        /// <param name="book">The book to add.</param>
         public async Task AddBookAsync(Book book)
         {
             _dbContext.Books.Add(book);
             await _dbContext.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Updates an existing book asynchronously.
+        /// </summary>
+        /// <param name="id">The ID of the book to update.</param>
+        /// <param name="updatedBook">The updated book data.</param>
+        /// <exception cref="ArgumentException">Thrown when the specified book ID does not exist.</exception>
         public async Task UpdateBookAsync(int id, Book updatedBook)
         {
             var existingBook = await _dbContext.Books.FindAsync(id);
@@ -52,6 +71,11 @@ namespace BookStore.Data.Repository
             }
         }
 
+        /// <summary>
+        /// Deletes a book by its unique identifier asynchronously.
+        /// </summary>
+        /// <param name="id">The ID of the book to delete.</param>
+        /// <exception cref="ArgumentException">Thrown when the specified book ID does not exist.</exception>
         public async Task DeleteBookAsync(int id)
         {
             var book = await _dbContext.Books.FindAsync(id);

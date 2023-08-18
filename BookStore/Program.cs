@@ -2,6 +2,7 @@
 using BookStore.Data.Context;
 using BookStore.Data.Repository;
 using BookStore.Domain.Interfaces;
+using BookStore.ErrorHandler;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookStore
@@ -16,10 +17,10 @@ namespace BookStore
 
             builder.Services.AddDbContextPool<BookstoreDbContext>(options =>
             {
-                // enable lazy loading
                 options.UseSqlServer(builder.Configuration.GetConnectionString("bookStoreDbEntities"));
             });
 
+            //Add Dependency
             builder.Services.AddScoped<IBookRepository, BookRepository>();
 
 
@@ -41,6 +42,8 @@ namespace BookStore
 
             app.UseAuthorization();
 
+            // Exception Handler
+            app.UseMiddleware<ExceptionHandlerMiddleware>();
 
             app.MapControllers();
 
