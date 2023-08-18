@@ -18,26 +18,52 @@ namespace BookStore.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Book>>> GetAllBooks()
         {
-            var books = await _bookRepository.GetAllBooksAsync();
-            return Ok(books);
+            try
+            {
+                var books = await _bookRepository.GetAllBooksAsync();
+                return Ok(books);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while processing your request.");
+            }
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Book>> GetBookById(int id)
+        public async Task<ActionResult<Book>> GetBookById(int id) 
         {
-            var book = await _bookRepository.GetBookByIdAsync(id);
-            if (book == null)
+            try
             {
-                return NotFound();
+                var book = await _bookRepository.GetBookByIdAsync(id);
+                if (book == null)
+                {
+                    return NotFound($"Book with ID {id} not found.");
+                }
+                return Ok(book);
             }
-            return Ok(book);
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while processing your request.");
+            }
         }
 
         [HttpPost]
         public async Task<ActionResult<Book>> AddBook(Book book)
         {
-            await _bookRepository.AddBookAsync(book);
-            return CreatedAtAction(nameof(GetBookById), new { id = book.Id }, book);
+            try
+            {
+                if (book == null)
+                {
+                    return BadRequest("Invalid book data.");
+                }
+
+                await _bookRepository.AddBookAsync(book);
+                return CreatedAtAction(nameof(GetBookById), new { id = book.Id }, book);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while processing your request.");
+            }
         }
 
         [HttpPut("{id}")]
@@ -50,7 +76,11 @@ namespace BookStore.Controllers
             }
             catch (ArgumentException)
             {
-                return NotFound();
+                return NotFound($"Book with ID {id} not found.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while processing your request.");
             }
         }
 
@@ -64,7 +94,11 @@ namespace BookStore.Controllers
             }
             catch (ArgumentException)
             {
-                return NotFound();
+                return NotFound($"Book with ID {id} not found.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while processing your request.");
             }
         }
     }
